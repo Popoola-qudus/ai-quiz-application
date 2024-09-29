@@ -19,26 +19,6 @@ interface Quiz {
   questions: Question[];
 }
 
-const apiKey = process.env.GEMINI_API_KEY;
-
-if (!apiKey) {
-  throw new Error("Gemini API key is missing");
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
-
-const generationConfig = {
-  temperature: 1,
-  topP: 0.95,
-  topK: 64,
-  maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
-};
-
 const chunkText = (text: string, maxTokens: number): string[] => {
   const words = text.split(" ");
   const chunks = [];
@@ -70,6 +50,26 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("Gemini API key is missing");
+    }
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+    });
+    
+    const generationConfig = {
+      temperature: 1,
+      topP: 0.95,
+      topK: 64,
+      maxOutputTokens: 8192,
+      responseMimeType: "text/plain",
+    };
 
     const pdfLoader = new PDFLoader(document as Blob, {
       parsedItemSeparator: " ",
